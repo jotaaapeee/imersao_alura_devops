@@ -1,12 +1,27 @@
+# A seção 'services' é onde definimos os diferentes contêineres que compõem nossa aplicação.
 services:
-  # Serviço da sua aplicação FastAPI
-  app:
-    build: . # Constrói a imagem a partir do Dockerfile na raiz do projeto
-    container_name: api # Nome do container
+  # 'api' é o nome que damos ao nosso serviço/contêiner principal.
+  api:
+    # 'build: .' instrui o Docker Compose a construir uma imagem a partir do Dockerfile
+    # localizado no diretório atual (representado pelo '.').
+    build: .
+    # Define um nome personalizado para o contêiner, facilitando a sua identificação.
+    container_name: api
+    # Mapeia a porta 8000 do seu computador (host) para a porta 8000 do contêiner.
+    # Isso permite que você acesse a API em http://localhost:8000.
     ports:
-      - "8000:8000" # Mapeia a porta 8000 do host para a porta 8000 do container
-                    # (conforme definido no seu Dockerfile com EXPOSE 8000 e CMD)
+      - "8000:8000"
+    # A seção 'volumes' cria um link (bind mount) entre um diretório na sua máquina (host)
+    # e um diretório dentro do contêiner.
     volumes:
-      - .:/app # Monta o diretório atual (onde está seu código) em /app dentro do container.
-               # Isso é ótimo para desenvolvimento, pois as alterações no código
-               # são refletidas automaticamente no container devido ao --reload do uvicorn.
+      # Mapeia o diretório atual ('.') do host para o diretório '/app' no contêiner.
+      # Benefícios:
+      # 1. Hot-Reload: Qualquer alteração no código-fonte local é refletida
+      #    instantaneamente no contêiner, ativando o reload do uvicorn.
+      # 2. Persistência de Dados: O arquivo do banco de dados (escola.db) será
+      #    criado no seu diretório local, garantindo que os dados não sejam perdidos
+      #    quando o contêiner for parado ou recriado.
+      - .:/app
+    # O comando para iniciar a aplicação é herdado do Dockerfile:
+    # CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    # A flag --reload é ótima para desenvolvimento, mas deve ser removida em produção.
